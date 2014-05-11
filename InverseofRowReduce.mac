@@ -1,0 +1,25 @@
+load(basic);
+
+listpartition(l,n,k):=block([temp:[]], map(lambda([x],(if(length(l)>=x+n-1)then temp:cons(part(l,makelist(i,i,x,x+n-1)),temp)
+                      else (temp:cons(part(l,makelist(s,s,x,length(l))),temp)))),makelist(i,i,1,length(l),k)),reverse(temp))$
+
+ech(mat):=block([eh:mat,mats:matrix_size(mat),temp1,st:[],div:[]],for i:1 thru mats[2] do 
+                    (if(i<mats[1]) then (push(eh[i,i],div), eh[i]:eh[i]/eh[i,i],temp1:eh[i],
+                      for y:i+1 thru mats[1] do 
+                        (
+                         push(eh[y,i]/eh[i,i],st),
+                         eh[y]:(eh[y]-eh[i]*(eh[y,i]/eh[i,i]))
+                        ),eh[i]:temp1  )),[eh,reverse(st),reverse(div)])$
+                        
+revech(mat):=block([ww,r1,r2,r3,r4,e1:[],e2:[],mtt,sol,col:mat[2],diag:mat[3],matr:mat[1],symbs:[],newm],
+                    rows:first(matrix_size(matr)),colm:last(matrix_size(matr)),/*print("rows:",rows,"cols:",colm),*/
+                       (for i:1 thru rows do 
+                          for j:1 thru colm do push(concat(concat("a",i),j),symbs),
+                            symbs:reverse(map(parse_string,symbs)), /*print(symbs),*/
+                              ww:apply(matrix,listpartition(symbs,colm,colm)),print("ww:",ww),
+                               newm:ech1(ww),print("newm:",newm),
+                                r1:map("=",newm[2],col),r2:map("=",newm[3],diag),print("r1:",r1,"r2:",r2),
+                                   for i:1 thru rows do for j:i thru colm do push(newm[1][i][j],e1),
+                                   for i:1 thru rows do for j:i thru colm do push(matr[i][j],e2),
+                                   r3:map("=",e1,e2),r4:flatten([r1,r2,r3]),print("r3:",r3,"r4:",r4),
+                                    sol:solve(r4,symbs)),reverse(sol))$
